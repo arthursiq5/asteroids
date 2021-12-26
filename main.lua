@@ -1,6 +1,9 @@
 function love.load()
-    shipX = love.graphics.getWidth() / 2
-    shipY = love.graphics.getHeight() / 2
+    arenaWidth = love.graphics.getWidth()
+    arenaHeight = love.graphics.getHeight()
+
+    shipX = arenaWidth / 2
+    shipY = arenaHeight / 2
     shipAngle = 0
 
     shipSpeedX = 0
@@ -23,24 +26,32 @@ function love.update(dt)
         shipSpeedY = shipSpeedY + math.sin( shipAngle ) * shipSpeed * dt
     end
 
-    shipX = shipX + shipSpeedX * dt
-    shipY = shipY + shipSpeedY * dt
+    shipX = (shipX + shipSpeedX * dt) % arenaWidth
+    shipY = (shipY + shipSpeedY * dt) % arenaHeight
     shipAngle = shipAngle % (2 * math.pi)
 end
 
 function love.draw()
-    love.graphics.setColor( 0, 0, 1 )
-    love.graphics.circle( 'fill', shipX, shipY, 30 )
+    for y = -1, 1 do
+        for x = -1, 1 do
+            love.graphics.origin()
+            love.graphics.translate( x * arenaWidth, y * arenaHeight )
+            
+            love.graphics.setColor( 0, 0, 1 )
+            love.graphics.circle( 'fill', shipX, shipY, 30 )
+        
+            local shipCircleDistance = 20
+            love.graphics.setColor( 0, 1, 1 )
+            love.graphics.circle(
+                'fill',
+                shipX + math.cos( shipAngle ) * shipCircleDistance,
+                shipY + math.sin( shipAngle ) * shipCircleDistance,
+                5
+            )
+        end
+    end
 
-    local shipCircleDistance = 20
-    love.graphics.setColor( 0, 1, 1 )
-    love.graphics.circle(
-        'fill',
-        shipX + math.cos( shipAngle ) * shipCircleDistance,
-        shipY + math.sin( shipAngle ) * shipCircleDistance,
-        5
-    )
-
+    love.graphics.origin()
     love.graphics.setColor(1, 1, 1)
     love.graphics.print('shipAngle: '..shipAngle)
     love.graphics.setColor(1, 1, 1)
