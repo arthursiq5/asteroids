@@ -17,7 +17,8 @@ function love.keypressed(key)
     if key == 's' then
         table.insert(bullets, {
             x = shipX + math.cos(shipAngle) * shipRadius,
-            y = shipY + math.sin(shipAngle) * shipRadius
+            y = shipY + math.sin(shipAngle) * shipRadius,
+            angle = shipAngle
         })
     end
 end
@@ -41,6 +42,12 @@ function love.update(dt)
     shipX = (shipX + shipSpeedX * dt) % arenaWidth
     shipY = (shipY + shipSpeedY * dt) % arenaHeight
     shipAngle = shipAngle % (2 * math.pi)
+
+    for bulletIndex, bullet in ipairs(bullets) do
+        local bulletSpeed = 500
+        bullet.x = (bullet.x + math.cos(bullet.angle) * bulletSpeed * dt) % arenaWidth
+        bullet.y = (bullet.y + math.sin(bullet.angle) * bulletSpeed * dt) % arenaHeight
+    end
 end
 
 function love.draw()
