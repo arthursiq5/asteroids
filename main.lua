@@ -8,6 +8,17 @@ function love.load()
 
     shipSpeedX = 0
     shipSpeedY = 0
+
+    bullets = {}
+end
+
+function love.keypressed(key)
+    if key == 's' then
+        table.insert(bullets, {
+            x = shipX,
+            y = shipY
+        })
+    end
 end
 
 function love.update(dt)
@@ -48,6 +59,11 @@ function love.draw()
                 shipY + math.sin( shipAngle ) * shipCircleDistance,
                 5
             )
+
+            for bulletIndex, bullet in ipairs(bullets) do
+                love.graphics.setColor(0, 1, 0)
+                love.graphics.circle('fill', bullet.x, bullet.y, 5)
+            end
         end
     end
 
