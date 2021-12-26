@@ -11,16 +11,9 @@ function love.load()
 
     shipRadius = 30
     bullets = {}
-end
 
-function love.keypressed(key)
-    if key == 's' then
-        table.insert(bullets, {
-            x = shipX + math.cos(shipAngle) * shipRadius,
-            y = shipY + math.sin(shipAngle) * shipRadius,
-            angle = shipAngle
-        })
-    end
+    bulletTimerLimit = 0.5
+    bulletTimer = bulletTimerLimit
 end
 
 function love.update(dt)
@@ -43,10 +36,33 @@ function love.update(dt)
     shipY = (shipY + shipSpeedY * dt) % arenaHeight
     shipAngle = shipAngle % (2 * math.pi)
 
-    for bulletIndex, bullet in ipairs(bullets) do
-        local bulletSpeed = 500
-        bullet.x = (bullet.x + math.cos(bullet.angle) * bulletSpeed * dt) % arenaWidth
-        bullet.y = (bullet.y + math.sin(bullet.angle) * bulletSpeed * dt) % arenaHeight
+
+    for bulletIndex = #bullets, 1, -1 do
+        local bullet = bullets[bulletIndex]
+        
+        bullet.timeLeft = bullet.timeLeft - dt
+
+        if bullet.timeLeft <= 0 then
+            table.remove( bullets, bulletIndex )
+        else
+            local bulletSpeed = 500
+            bullet.x = (bullet.x + math.cos(bullet.angle) * bulletSpeed * dt) % arenaWidth
+            bullet.y = (bullet.y + math.sin(bullet.angle) * bulletSpeed * dt) % arenaHeight
+        end
+    end
+
+    bulletTimer = bulletTimer + dt
+
+    if love.keyboard.isDown('s') then
+        if bulletTimer >= bulletTimerLimit then
+            bulletTimer = 0
+            table.insert(bullets, {
+                x = shipX + math.cos(shipAngle) * shipRadius,
+                y = shipY + math.sin(shipAngle) * shipRadius,
+                angle = shipAngle,
+                timeLeft = 4
+            })
+        end
     end
 end
 
